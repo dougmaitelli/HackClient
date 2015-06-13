@@ -28,10 +28,11 @@ public class ProcessThread extends Thread {
     @Override
     public void run() {
         try {
-            String buffer;
+            int buffer;
 
-            while ((buffer = proccessReader.readLine()) != null) {
-                proccess.write(buffer);
+            while ((buffer = proccessReader.read()) != -1) {
+                proccess.getOut().write(buffer);
+                proccess.getOut().flush();
             }
         } catch (IOException ex) {
             Logger.getLogger(ProcessThread.class.getName()).log(Level.SEVERE, null, ex);

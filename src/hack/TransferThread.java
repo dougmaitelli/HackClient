@@ -47,7 +47,7 @@ public class TransferThread extends Thread {
 
                 Md5 hash;
 
-                hash = new Md5(file.getName());
+                hash = new Md5(file);
 
                 os.write(hash.getHash() + "\n");
                 os.flush();

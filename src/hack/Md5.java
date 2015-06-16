@@ -19,9 +19,7 @@ public class Md5 {
 
     private String hashCode;
 
-    public Md5(String fileName) throws FileNotFoundException, IOException, NoSuchAlgorithmException {
-        File file = new File(fileName);
-
+    public Md5(File file) throws FileNotFoundException, IOException, NoSuchAlgorithmException {
         FileInputStream fis = new FileInputStream(file);
 
         MessageDigest hash = MessageDigest.getInstance("MD5");

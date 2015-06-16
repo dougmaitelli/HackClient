@@ -17,6 +17,10 @@ public class ProcessThread extends Thread {
 
     private ConsoleThread proccess;
     private BufferedReader proccessReader;
+    
+    private FlushTimer flushTimer;
+    private String lastReadLine = "";
+    private String currentPath;
 
     public ProcessThread(ConsoleThread proc, BufferedReader reader) {
         super("Process Thread");
@@ -32,10 +36,45 @@ public class ProcessThread extends Thread {
 
             while ((buffer = proccessReader.read()) != -1) {
                 proccess.getOut().write(buffer);
-                proccess.getOut().flush();
+                
+                lastReadLine += (char) buffer;
+                
+                if (flushTimer != null) {
+                	flushTimer.interrupt();
+                }
+                
+                if (buffer == '\n') {
+                	proccess.getOut().flush();
+                	
+                	lastReadLine = "";
+                } else {
+                	flushTimer = new FlushTimer();
+                    flushTimer.start();
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(ProcessThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public class FlushTimer extends Thread {
+    	
+    	@Override
+    	public void run() {
+    		try {
+    			Thread.sleep(100);
+    		} catch (InterruptedException ex) {
+    			return;
+    		}
+    		
+    		proccess.getOut().flush();
+    		currentPath = lastReadLine;
+    		System.out.println(currentPath);
+    		flushTimer = null;
+    	}
+    }
+    
+    public String getCurrentPath() {
+		return currentPath;
+	}
 }

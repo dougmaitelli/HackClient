@@ -22,13 +22,15 @@ public class ConsoleThread extends Thread {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+    
     private Process proccess;
     private BufferedReader proccessReader;
     //private BufferedReader proccessErrorReader;
     private PrintWriter proccessWriter;
+    
     private ProcessThread proccessThread;
     //private ProcessThread proccessErrorThread;
-
+    
     public ConsoleThread(Integer port) throws IOException {
         super("Console Thread");
 
@@ -71,7 +73,14 @@ public class ConsoleThread extends Thread {
 
                     if (cmd.equals("file")) {
                         if (tok.hasMoreTokens()) {
-                            TransferThread transferThread = new TransferThread(tok.nextToken());
+                        	String filePath = proccessThread.getCurrentPath();
+                        	if (isWindows()) {
+                        		filePath = filePath.substring(0, filePath.length() - 1) + '\\';
+                            } else {
+                            	filePath = filePath.substring(filePath.indexOf(':') + 1, filePath.length() - 1) + '/';
+                            }
+                        	
+                            TransferThread transferThread = new TransferThread(filePath + tok.nextToken());
                             transferThread.start();
                         }
                     } else {

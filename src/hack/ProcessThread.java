@@ -69,7 +69,6 @@ public class ProcessThread extends Thread {
     		
     		proccess.getOut().flush();
     		currentPath = lastReadLine;
-    		System.out.println(currentPath);
     		flushTimer = null;
     	}
     }
